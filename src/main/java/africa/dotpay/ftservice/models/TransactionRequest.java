@@ -4,6 +4,8 @@
  */
 package africa.dotpay.ftservice.models;
 
+import africa.dotpay.ftservice.tools.customAnnotations.ValidTransactionAmount;
+import africa.dotpay.ftservice.tools.customAnnotations.ValidTransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +27,8 @@ public class TransactionRequest {
 	private String transactionReference;
 	private String beneficiaryAccount;
 	private String nameEnquirySessionId;
+	@ValidTransactionStatus
 	private String status;
-	private String amount;
+	@ValidTransactionAmount
+	private Double amount;
 }
