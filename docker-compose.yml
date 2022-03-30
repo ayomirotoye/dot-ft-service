@@ -1,29 +1,21 @@
-version: '3.8'
+version: '2'
 services:
-  mysqldb:
-    image: mysql:5.7
-    restart: unless-stopped
-    env_file: ./.env
-    environment:
-      - MYSQL_ROOT_PASSWORD=$DATASOURCE_PASSWORD
-      - MYSQL_DATABASE=$DATASOURCE_SCHEMA
-    ports:
-      - $SERVICE_LOCAL_PORT:$SERVICE_DOCKER_PORT
-    volumes:
-      - db:/var/lib/mysql
   app:
-    depends_on:
-      - mysqldb
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     restart: on-failure
-    env_file: ./.env
     ports:
-      - $SERVICE_LOCAL_PORT:$SERVICE_DOCKER_PORT
+      - 7000:7000
     environment:
-      SPRING_APPLICATION_JSON: '{ "spring.datasource.url"  : "jdbc:mysql://mysqldb:$SERVICE_DOCKER_PORT/$DATASOURCE_SCHEMA?useSSL=false", "spring.datasource.username" : "$DATASOURCE_USERNAME", "spring.datasource.password" : "$DATASOURCE_PASSWORD", "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect", "spring.jpa.hibernate.ddl-auto" : "update" }'
+      - "SPRING_PROFILES_ACTIVE=default"
+      - DOTPAY_CONFIG_CRON_FOR_RUNNING_ANALYSIS=0 0/1 * * * *
+      - DOTPAY_CONFIG_CRON_FOR_RUNNING_SUMMARY=0 0 12 * * *
+      - DOTPAY_CONFIG_FEE_CAP=100
+      - DOTPAY_CONFIG_FEE_PERCENT=0.5
+      - DOTPAY_CONFIG_COMMISSION_PERCENT=20
     volumes:
       - .m2:/root/.m2
     stdin_open: true
     tty: true
-volumes:
-  db:
+
