@@ -11,6 +11,7 @@ services:
       - $SERVICE_LOCAL_PORT:$SERVICE_DOCKER_PORT
     volumes:
       - db:/var/lib/mysql
+      - ./mysql-init.sql:/tmp/mysql-init.sql
   app:
     depends_on:
       - mysqldb
