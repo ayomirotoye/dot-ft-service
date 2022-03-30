@@ -25,11 +25,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
 
 	List<Transaction> findByBeneficiaryAccount(String beneficiaryAccount, Pageable paging);
 
+	List<Transaction> findByCreatedOnLessThanEqual(Date theDate, Pageable paging);
+
 	List<Transaction> findByCreatedOnLessThanEqual(Date theDate);
 
-	List<Transaction> findByCreatedOn(Date theDate);
+	List<Transaction> findByCreatedOn(Date theDate, Pageable paging);
 
 	List<Transaction> findByIsProcessedTrue();
 
+	List<Transaction> findByIsProcessedTrue(Pageable paging);
+
 	List<Transaction> findByIsProcessedFalse();
+
+	List<Transaction> findByIsProcessedFalse(Pageable paging);
 }

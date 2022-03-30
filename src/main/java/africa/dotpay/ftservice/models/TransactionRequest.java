@@ -33,7 +33,7 @@ public class TransactionRequest {
 	@Length(min = 8, max = 32)
 	private String transactionReference;
 	private String beneficiaryAccount;
-	@Length(min = 12, max = 32)
+	@Length(min = 8, max = 32)
 	private String nameEnquirySessionId;
 	@ValidTransactionStatus
 	private String status;

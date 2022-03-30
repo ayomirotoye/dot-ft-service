@@ -4,6 +4,7 @@
  */
 package africa.dotpay.ftservice.controllers;
 
+import java.text.ParseException;
 import java.util.HashMap;
 
 import javax.validation.Valid;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import africa.dotpay.ftservice.enums.FetchByEnum;
+import africa.dotpay.ftservice.exceptions.CustomException;
 import africa.dotpay.ftservice.models.ApiResponse;
 import africa.dotpay.ftservice.models.FetchRequest;
 import africa.dotpay.ftservice.models.TransactionRequest;
 import africa.dotpay.ftservice.services.TransactionService;
+import africa.dotpay.ftservice.tools.customAnnotations.ValidTransactionFilterDate;
 
 /**
  * @author Ayomide.Akinrotoye
@@ -48,30 +51,32 @@ public class TransactionController {
 	public ResponseEntity<ApiResponse> fetchTransactions(
 			@RequestBody(required = false) HashMap<String, Object> dateRange,
 			@RequestParam(required = false) String transactionStatus,
-			@RequestParam(defaultValue = "10") Integer pageSize,
-			@RequestParam(defaultValue = "0") Integer pageNo,
-			@RequestParam(required = false) String transactionDate,
+			@RequestParam(defaultValue = "10") Integer pageSize, @RequestParam(defaultValue = "0") Integer pageNo,
+			@RequestParam(required = false) @Valid @ValidTransactionFilterDate String transactionDate,
 			@RequestParam(required = false) String sourceAccount,
-			@RequestParam(required = false) String beneficiaryAccount, @RequestParam(required = false) String userId) {
+			@RequestParam(required = false) String transactionSummary,
+			@RequestParam(required = false) String beneficiaryAccount, @RequestParam(required = false) String userId)
+			throws ParseException {
 
 		FetchRequest fetchRequest = null;
 
 		if (transactionStatus != null) {
-			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.TRANSACTION_STATUS.name())
+			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.TRANSACTION_STATUS.name()).dateRange(dateRange)
 					.fetchFor(transactionStatus).build();
 		} else if (transactionDate != null) {
 			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.TRANSACTION_DATE.name()).fetchFor(transactionDate)
-					.build();
+					.dateRange(dateRange).build();
 		} else if (sourceAccount != null) {
 			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.SOURCE_ACCOUNT.name()).fetchFor(sourceAccount)
-					.build();
+					.dateRange(dateRange).build();
 		} else if (beneficiaryAccount != null) {
-			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.BENEFICIARY_ACCOUNT.name())
+			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.BENEFICIARY_ACCOUNT.name()).dateRange(dateRange)
 					.fetchFor(beneficiaryAccount).build();
-		}
-
-		if (dateRange != null) {
-			fetchRequest.setDateRange(dateRange);
+		} else if (transactionSummary != null) {
+			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.TRANSACTION_SUMMARY.name()).dateRange(dateRange)
+					.fetchFor(transactionSummary).build();
+		} else {
+			throw new CustomException("Search parameter not supported");
 		}
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);
