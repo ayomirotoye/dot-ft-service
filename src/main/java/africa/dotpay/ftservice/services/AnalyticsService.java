@@ -21,6 +21,7 @@ import africa.dotpay.ftservice.enums.TransactionStatusEnum;
 import africa.dotpay.ftservice.models.TransactionSummary;
 import africa.dotpay.ftservice.repositories.TransactionRepository;
 import africa.dotpay.ftservice.repositories.TransactionSummaryRepo;
+import africa.dotpay.ftservice.tools.HelperUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,7 +34,6 @@ public class AnalyticsService {
 	private TransactionRepository transactionRepository;
 	private TransactionSummaryRepo transactionSummaryRepo;
 	private DotPayFTProperties dotPayFTProperties;
-	private TransactionSummary summary;
 
 	@Autowired
 	public AnalyticsService(TransactionRepository transactionRepository, DotPayFTProperties dotPayFTProperties,
@@ -63,16 +63,13 @@ public class AnalyticsService {
 		Date nowDate = new Date();
 		List<Transaction> getTransactions = transactionRepository.findByCreatedOnLessThanEqual(nowDate);
 
-		summary = TransactionSummary.builder().build();
+		TransactionSummary summary = TransactionSummary.builder().build();
 
 		try {
 			if (!getTransactions.isEmpty()) {
-				summary.setTotalTransactions(getTransactions.size());
 				log.info("== STARTED SUMMARY PROCESS @ ===" + LocalDateTime.now());
-				getTransactions.stream().forEach(tnx -> {
-					summarize(tnx);
-				});
-
+				summary = HelperUtils.summarize(getTransactions, summary);
+				summary.setTotalTransactions(getTransactions.size());
 				SummaryOfTransaction summaryOfTransaction = new SummaryOfTransaction();
 				BeanUtils.copyProperties(summary, summaryOfTransaction, "id");
 
@@ -89,23 +86,6 @@ public class AnalyticsService {
 		log.info("=== THERE ARE NO TRANSACTIONS TO SUMMARIZE @ ===" + LocalDateTime.now());
 	}
 
-	private void summarize(Transaction transaction) {
-		if (transaction.getIsProcessed()) {
-			summary.addToProcessed(1);
-		}
-
-		if (transaction.getIsCommissionWorthy()) {
-			summary.addToCommissionWorthy(1);
-		}
-
-		if (transaction.getStatus().equalsIgnoreCase(TransactionStatusEnum.SUCCESSFUL.name())) {
-			summary.addToSuccessful(1);
-		} else {
-			summary.addToFailed(1);
-		}
-
-	}
-
 	private Transaction defineIfCommissionWorthyAndProcess(Transaction transaction) {
 		if (transaction.getStatus().equalsIgnoreCase(TransactionStatusEnum.SUCCESSFUL.name())) {
 			transaction.setIsProcessed(Boolean.TRUE);
@@ -116,6 +96,7 @@ public class AnalyticsService {
 
 			transaction.setFeeAmount(feeAmount);
 			transaction.setCommissionAmount(commissionAmount);
+			transaction.setIsCommissionWorthy(Boolean.TRUE);
 			transaction.setTransactionProcessTime(new Date());
 			return transaction;
 		}

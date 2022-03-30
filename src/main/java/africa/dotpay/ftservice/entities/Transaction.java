@@ -53,4 +53,5 @@ public class Transaction extends Auditable<String> {
 	private Date transactionProcessTime;
 	@Version
 	Long version;
+
 }
