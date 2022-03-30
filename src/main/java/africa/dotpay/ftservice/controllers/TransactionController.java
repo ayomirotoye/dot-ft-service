@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import africa.dotpay.ftservice.constants.MessageContent;
 import africa.dotpay.ftservice.enums.FetchByEnum;
 import africa.dotpay.ftservice.exceptions.CustomException;
 import africa.dotpay.ftservice.models.ApiResponse;
@@ -76,7 +77,7 @@ public class TransactionController {
 			fetchRequest = FetchRequest.builder().fetchBy(FetchByEnum.TRANSACTION_SUMMARY.name()).dateRange(dateRange)
 					.fetchFor(transactionSummary).build();
 		} else {
-			throw new CustomException("Search parameter not supported");
+			throw new CustomException(MessageContent.paramNotSpported);
 		}
 
 		Pageable paging = PageRequest.of(pageNo, pageSize);

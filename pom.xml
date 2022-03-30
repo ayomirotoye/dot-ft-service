@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>africa.dotpay</groupId>
-	<artifactId>dot-ft-service</artifactId>
+	<artifactId>dotpay-ft-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>dot-ft-service</name>
+	<name>dotpay-ft-service</name>
 	<description>A service that simulates the NIBSS Instant Payments (NIP)</description>
 	<properties>
 		<java.version>11</java.version>
@@ -39,8 +39,8 @@
 			<artifactId>spring-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>

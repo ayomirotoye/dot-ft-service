@@ -12,5 +12,6 @@ public class MessageContent {
 	public static final String successful = "Successful";
 	public static final String failed = "Failed";
 	public static final String badRequest = "Bad request";
-	public static final String nullPointer = "Bad request";
+	public static final String nullPointer = "Oops! Something happened while processing";
+	public static final String paramNotSpported = "Search parameter not supported";
 }
