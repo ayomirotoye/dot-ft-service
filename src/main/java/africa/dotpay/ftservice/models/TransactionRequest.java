@@ -4,6 +4,10 @@
  */
 package africa.dotpay.ftservice.models;
 
+import javax.validation.constraints.NotBlank;
+
+import org.hibernate.validator.constraints.Length;
+
 import africa.dotpay.ftservice.tools.customAnnotations.ValidTransactionAmount;
 import africa.dotpay.ftservice.tools.customAnnotations.ValidTransactionStatus;
 import lombok.AllArgsConstructor;
@@ -23,9 +27,13 @@ import lombok.Setter;
 @Builder
 public class TransactionRequest {
 	private String beneficiaryAccountName;
+	@NotBlank
 	private String sourceAccount;
+	private String sourceAccountName;
+	@Length(min = 8, max = 32)
 	private String transactionReference;
 	private String beneficiaryAccount;
+	@Length(min = 12, max = 32)
 	private String nameEnquirySessionId;
 	@ValidTransactionStatus
 	private String status;
